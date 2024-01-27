@@ -1,101 +1,91 @@
-#note, must install dearpygui
 import socket
 import time
-import dearpygui.dearpygui as dpg
 
 #as stated in server.py, similar things need change here
 HOST = "127.0.0.1"
 PORT = 6969
-color = "red"
+color = 'blue'
 target = False
 latitude = ''
 longitude = ''
-rt_time = 0
+final_latitude = ''
+final_longitude = ''
 #inb4 out of scope
 
-
-#sets up GUI
-dpg.create_context()
-
-def change_color(sender, callback):
-	return
-
-with dpg.window(label="Primary Telemetry"):
-      	dpg.add_text("color of target")
-      	dpg.add_input_text(default_value="red")
-      	dpg.add_button(label="send",callback=FUNCTION)
-      	dpg.add_text("target found?")
-      	dpg.add_text(target)
-      	dpg.add_text("latitude: " + latitude)
-      	dpg.add_text("longitude: " + longitude)
-		dpg.add_text("ping " + rt_time + "ms")
-        
-        
-dpg.create_viewport(title="Primary Telemetry", width=600, height=600)
-dpg.setup_dearpygui()
-dpg.show_viewport()
+#function for taking data and cutting off everything past the null terminator
+def sortData(raw, variable):
+	for space in raw:
+		if space == ' ':
+			break
+		else:
+			variable += space
 
 
-
-try:
-	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:        
-		
-        #connects to server
-		s.connect((HOST, PORT))
-		target = s.recv(1)
-		s.sendall(b"recieved")
-		#takes note of time for rt_time
-		ping_time = time.time()
-        latitude = ''
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:        
+	#connects to server
+	s.connect((HOST, PORT))
+	
+	while True:
+		latitude = ''
 		longitude = ''
 		
-        
-		####experimental netcode section####
 		
-		#receives first piece of data and notes time for rtt
-		data = s.recv(1024)
-		pong_time = time.time()
-
-		parse = data.split("$")
+		print('receive 1')
+		data = s.recv(1024).decode()
+        #separates 3 byte netcode from data received
+		
+		print(data + "\n")
+		parse = data.split('$')
 		
 		match parse[0]:
 			#Latitude
-			case "LAT":
-				lat_raw = parse[1]
-				for space in lat_raw:
-			if space == ' ':
-				break
-			else:
-				latitude += space
+			case 'LAT':
+			#	lat_raw = parse[1]
+				print('lat')
+				for space in parse[1]:
+					if space == ' ':
+						break
+					else:
+						latitude += space
 				
 			#Longitutde 	
-			case "LON":
-				lon_raw = parse[1]
-				for space in data:
-			if space == ' ':
-				break
-			else:
-				latitude += space
+			case 'LON':
+			#	lon_raw = parse[1]
+				print('lon')
+				for space in parse[1]:
+					if space == ' ':
+						break
+					else:
+						latitude += space
 				
-			#case "RGB":
-				
+			case "RGB":
+				print('color')
+                #prints current color (for debug purposes)
+				print(parse[1])
+                #sends color with null terminator
+				s.sendall((color + ' ').encode())	
 				
 			#Target state	
-			case "TGT":
-				
-		#calculates round trip time
-		#probaby can't be considered an accurate "ping" but it's just a general measurement
-		rt_time  = (pong_time - ping_time)*1000
-		
-		#until the GUI works, I'm just going to spit the lat and long into the terminal
-		print("lat: " + latitude + "\n" + "long: " + longitutde "\n")
-		print("########################\n")
-		dpg.start_dearpigui()
-except: KeyboardInterrupt
-	dpg.destroy_context()
-    exit()
-print(rtt_time)
-
-
-
-
+			case 'TGT':
+			    #its sending a singular bit, so this should work right?
+				#1/25/24: no it doesn't work lol
+				target = parse[1]
+			
+			case 'FLA':
+				for space in parse[1]:
+					if space == ' ':
+						break
+					else:
+						final_latitude += space
+			
+			case 'FLO':
+				for space in parse[1]:
+					if space == ' ':
+						break
+					else:
+						final_longitude += space
+		data = ''
+#		s.sendall(('next' + ' ').encode())
+		#printing lat and long to terminal for debugging purposes
+		#print("lat: " + latitude + "\n" + "long: " + longitude + "\n")
+		#print("########################\n")
