@@ -3,7 +3,7 @@ import time
 
 #as stated in server.py, similar things need change here
 HOST = "127.0.0.1"
-PORT = 6969
+PORT = 1337
 color = 'blue'
 target = False
 latitude = ''
@@ -30,7 +30,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		longitude = ''
 		
 		
-		print('receive 1')
+	
 		data = s.recv(1024).decode()
         #separates 3 byte netcode from data received
 		
@@ -42,24 +42,20 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			case 'LAT':
 			#	lat_raw = parse[1]
 				print('lat')
-				for space in parse[1]:
-					if space == ' ':
-						break
-					else:
-						latitude += space
+				sortData(parse[1], latitude)
 				
 			#Longitutde 	
 			case 'LON':
 			#	lon_raw = parse[1]
 				print('lon')
-				for space in parse[1]:
-					if space == ' ':
-						break
-					else:
-						latitude += space
+				sortData(parse[1], longitude)
 				
+			
 			case "RGB":
+				#currently it will prompt the console for a string
+				color = input("color: ")
 				print('color')
+				
                 #prints current color (for debug purposes)
 				print(parse[1])
                 #sends color with null terminator
@@ -69,22 +65,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			case 'TGT':
 			    #its sending a singular bit, so this should work right?
 				#1/25/24: no it doesn't work lol
-				target = parse[1]
-			
+				target = True
+
 			case 'FLA':
-				for space in parse[1]:
-					if space == ' ':
-						break
-					else:
-						final_latitude += space
+				sortData(parse[1], final_latitude)
 			
 			case 'FLO':
-				for space in parse[1]:
-					if space == ' ':
-						break
-					else:
-						final_longitude += space
-		data = ''
+				sortData(parse[1], final_longitude)
 #		s.sendall(('next' + ' ').encode())
 		#printing lat and long to terminal for debugging purposes
 		#print("lat: " + latitude + "\n" + "long: " + longitude + "\n")
