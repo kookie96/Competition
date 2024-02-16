@@ -1,10 +1,11 @@
 import socket
 import time
 
-HOST = "127.0.0.1"
+HOST = "197.0.0.1"
 PORT = 1337
 
 color = 'red'
+altitude = 0
 latitude = 0
 longitude = 0
 final_latitude = 0
@@ -66,7 +67,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 				conn.sendall(package.encode())
 				
 				#if the target is found and lat/long is calculated, the coordnates of the target will be sent
-				if (target && !sent_target):
+				if (target and not(sent_target)):
 					package = ('TGT$' + 'if you read this')
 					conn.sendall(package.encode())
 					time.sleep(0.003)
