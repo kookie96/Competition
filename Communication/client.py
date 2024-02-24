@@ -4,7 +4,7 @@ import time
 #as stated in server.py, similar things need change here
 HOST = "127.0.0.1"
 PORT = 1337
-color = 'blue'
+color = "red"
 target = False
 latitude = ''
 longitude = ''
