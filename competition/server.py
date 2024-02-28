@@ -5,14 +5,14 @@ HOST = "127.0.0.1"
 PORT = 1337
 
 color = "red"
-altitude = 416
-latitude = 33.837189
-longitude = -84.53877
-azimuth = 172
-pixelX = 2000
-pixelY = 1125
-rollAngle = 0
-theta = -36
+altitude = "416"
+latitude = "33.837189"
+longitude = "-84.53877"
+azimuth = "172"
+pixelX = "2000"
+pixelY = "1125"
+rollAngle = "0"
+theta = "-36"
 target = True
 sent_target = False
 
@@ -54,11 +54,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 # conn.sendall(target_state)
 
                 # adds null terminator and netcode for client to parse
-                package = ""
-                # package = "LAT$" + str(latitude) + "\n"
+                # ackage = ""
+                # ackage = "LAT$" + str(latitude) + "\n"
                 # latitude += 1
-                # print(package)
-                # conn.sendall(package.encode())
+                # rint(package)
+                # onn.sendall(package.encode())
 
                 # makes sure client recieves first coordnate before sending the second coordnate
 
@@ -107,8 +107,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     conn.sendall(package.encode())
                     sent_target = True
                     print(package)
+                    exit()
             except KeyboardInterrupt:
                 exit()
-            except (BrokenPipeError, IOError):
-                print("client likely disconnected.")
-                break
+                # except (BrokenPipeError, IOError):
+            break       # print(BrokenPipeError)
