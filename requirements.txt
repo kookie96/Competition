@@ -1,0 +1,6 @@
+geotiff
+matplotlib
+mgrs
+pillow
+imagecodecs
+pyproj
