@@ -36,15 +36,18 @@ def SENSOR():
     return (azimuth, rollAngle, theta)
 
 
-t1 = threading.Thread(None, GPS())
-t2 = threading.Thread(None, AI())
-t3 = threading.Thread(None, SENSOR())
-t1.start()
-t2.start()
-t3.start()
-t2.join()
-t1.join()
-t2.join()
+try:
+    t1 = threading.Thread(None, GPS())
+    t2 = threading.Thread(None, AI())
+    t3 = threading.Thread(None, SENSOR())
+    t1.start()
+    t2.start()
+    t3.start()
+    t2.join()
+    t1.join()
+    t2.join()
+except:
+    pass
 
 comms(HOST, latitude, longitude, altitude,
       azimuth, pixelX, pixelY, rollAngle, theta)

@@ -95,7 +95,7 @@ def communication(HOST):
                    # print('color')
 
         # prints current color (for debug purposes)
-                    print(parse[1])
+                    # print(parse[1])
         # sends color with null terminator
                     s.sendall((color + ' ').encode())
 
@@ -139,7 +139,7 @@ def comms(HOST):
             pass
         else:
             finLat, finLong, finAlt, finterAlt = lat, long, alt, terAlt
-            print("This code actually executed!")
+            # print("This code actually executed!")
             # break
             return (finLat, finLong, finAlt, finterAlt)
     return (lat, long, alt, terAlt)
