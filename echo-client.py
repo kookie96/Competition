@@ -5,7 +5,11 @@ import tkinter as tk
 import json
 import time
 import threading
+from pymavlink import mavutil
 from openAthena import *
+
+
+mavDevice = mavutil.mavlink_connection('udp:127.0.0.1:4000')
 
 # generate Lat/Long Frame
 
@@ -123,6 +127,10 @@ def target_endpoint(lat, long, target_label):
     if response["status"] == 200:
         target_label.config(text="TARGET: FOUND")
         entry.delete("0", tk.END)  # Clear existing text
+        
+        #pulls altitude from mavlink
+        mavMsg = mavDevice.recv_match(type='ALTITUDE', blocking = True)
+        altitude = mavMsg.altitude
 
         latitude, longitude, altitude, azimuth, targetX, targetY, rollAngle, theta = response["data"]["latitude"], response["data"]["longitude"], response["data"][
             "altitude"], response["data"]["azimuth"], response["data"]["target_X"], response["data"]["target_Y"], response["data"]["rollAngle"], response["data"]["theta"]
