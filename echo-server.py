@@ -40,7 +40,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # initialize TCP S
                     # Store target color
                     TARGET_COLOR = request_json["payload"]["color"]
 
-                    # Start looking for the target and update pixels (OpenCV)
+                    # LOAD AI DATA HERE
                     target_pixelX = 2000
                     target_pixelY = 1125
 
@@ -49,15 +49,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # initialize TCP S
                     # latitude = geo.lat
                     # longitude = geo.lon
 
-                    # replicating getting gps coordinates
+                    # LOAD GPS DATA HERE
                     latitude = 33.837189
                     longitude = -84.53877
 
-                    # replicating sensor data
+                    # LOAD SENSOR DATA HERE
                     altitude = 416
                     azimuth = 172
                     rollAngle = 0
-                    theta = -36
+                    theta = -36  # pitch of plane
                     # Create response with coordinates and pixels
                     response = {
                         "status": 200,
@@ -84,7 +84,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # initialize TCP S
                     # latitude = geo.lat
                     # longitude = geo.lon
 
-                    # replicating the above
+                    # PUT GPS DATA HERE
                     time.sleep(1)
                     latitude = round(random.uniform(-90, 91), 6)
                     longitude = round(random.uniform(-180, 181), 6)
