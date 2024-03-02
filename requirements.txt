@@ -4,3 +4,5 @@ mgrs
 pillow
 imagecodecs
 pyproj
+pymavlink
+serial
