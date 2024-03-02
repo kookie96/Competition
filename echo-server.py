@@ -4,23 +4,25 @@ import socket
 import time
 import json
 import random
-# import subprocess
-# import serial
+import subprocess
+import serial
 
-# from ublox_gps import UbloxGps
+from ublox_gps import UbloxGps
 
 HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
 PORT = 65430  # Port to listen on (non-privileged ports are > 1023)
 BASE_STATION_ADDRESS = "10.0.0.2"  # U-center NTRIP server address
 
 # initiate NTRIP connection with base station
-# command = ["str2str", "-in", "ntrip://sae:1234@" + BASE_STATION_ADDRESS + ":2101/ARCT"]
-# serial_device = open['/dev/ttys0', 'w']
-# process = subprocess.Popen(command, stdout=serial_device, stderr=subprocess.PIPE, text=True)
+command = ["str2str", "-in", "ntrip://sae:1234@" +
+           BASE_STATION_ADDRESS + ":2101/ARCT"]
+serial_device = open['/dev/ttys0', 'w']
+process = subprocess.Popen(
+    command, stdout=serial_device, stderr=subprocess.PIPE, text=True)
 
 # establish connection with GPS module stream
-# serial_port = serial.Serial('/dev/ttyS0', baudrate=38400, timeout=1)
-# gps = UbloxGps(serial_port)
+serial_port = serial.Serial('/dev/ttyS0', baudrate=38400, timeout=1)
+gps = UbloxGps(serial_port)
 
 TARGET_COLOR = ""
 
@@ -45,19 +47,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # initialize TCP S
                     target_pixelY = 1125
 
                     # Get current coordinates after finding target
-                    # geo = gps.geo_coords()
-                    # latitude = geo.lat
-                    # longitude = geo.lon
+                    geo = gps.geo_coords()
+                    latitude = geo.lat
+                    longitude = geo.lon
 
                     # LOAD GPS DATA HERE
-                    latitude = 33.837189
-                    longitude = -84.53877
+                   # latitude = 33.837189
+                   # longitude = -84.53877
 
-                    # LOAD SENSOR DATA HERE
-                    altitude = 416
-                    azimuth = 172
-                    rollAngle = 0
-                    theta = -36  # pitch of plane
                     # Create response with coordinates and pixels
                     response = {
                         "status": 200,
@@ -67,10 +64,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:  # initialize TCP S
                             "longitude": longitude,
                             "target_X": target_pixelX,
                             "target_Y": target_pixelY,
-                            "altitude": altitude,
-                            "azimuth": azimuth,
-                            "rollAngle": rollAngle,
-                            "theta": theta
                         }
                     }
 
