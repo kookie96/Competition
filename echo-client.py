@@ -127,26 +127,26 @@ def target_endpoint(lat, long, target_label):
     if response["status"] == 200:
         target_label.config(text="TARGET: FOUND")
         entry.delete("0", tk.END)  # Clear existing text
-        
-        #sends request for parameters
-        mavDevice.mav.param_request_list_send(mavDevice.target_system, mavDevice.target_component)
-        
-        
-        #pulls altitude from mavlink
-        mavAlt = mavDevice.recv_match(type='ALT', blocking = True)
+
+        # sends request for parameters
+        mavDevice.mav.param_request_list_send(
+            mavDevice.target_system, mavDevice.target_component)
+
+        # pulls altitude from mavlink
+        mavAlt = mavDevice.recv_match(type='ALT', blocking=True)
         altitude = mavAlt.decode()
-        
-        mavRoll = mavDevice.recv_match(type='RLL', blocking = True)
+
+        mavRoll = mavDevice.recv_match(type='RLL', blocking=True)
         rollAngle = mavRoll.decode()
-        
-        mavPitch = mavDevice.recv_match(type='PTCH', blocking = True)
+
+        mavPitch = mavDevice.recv_match(type='PTCH', blocking=True)
         theta = mavPitch.decode()
 
-        mavComp = mavDevice.recv_match(type='COMPASS', blocking = True)
+        mavComp = mavDevice.recv_match(type='COMPASS', blocking=True)
         azimuth = mavComp.decode()
-        
+
         print(altitude + ' ' + rollAngle + ' ' + theta + ' ' + azimuth)
-        
+
         latitude, longitude, targetX, targetY = response["data"]["latitude"], response["data"]["longitude"], response["data"][
             "altitude"], response["data"]["target_X"], response["data"]["target_Y"]
 
@@ -225,6 +225,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
 
     root = tk.Tk()
+    root.configure(bg="black")
     root.title("GCS Interface")
 
     additional_frame = tk.Frame(root)
