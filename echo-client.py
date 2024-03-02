@@ -127,6 +127,7 @@ def target_endpoint(lat, long, target_label):
     if response["status"] == 200:
         target_label.config(text="TARGET: FOUND")
         entry.delete("0", tk.END)  # Clear existing text
+<<<<<<< HEAD
 
         # pulls altitude from mavlink
         mavAlt = mavDevice.recv_match(type='ALT', blocking=True)
@@ -143,6 +144,30 @@ def target_endpoint(lat, long, target_label):
 
         latitude, longitude, targetX, targetY = response["data"]["latitude"], response[
             "data"]["longitude"], response["data"]["target_X"], response["data"]["target_Y"]
+=======
+        
+        #sends request for parameters
+        mavDevice.mav.param_request_list_send(mavDevice.target_system, mavDevice.target_component)
+        
+        
+        #pulls altitude from mavlink
+        mavAlt = mavDevice.recv_match(type='ALT', blocking = True)
+        altitude = mavAlt.decode()
+        
+        mavRoll = mavDevice.recv_match(type='RLL', blocking = True)
+        roll = mavRoll.decode()
+        
+        mavPitch = mavDevice.recv_match(type='PTCH', blocking = True)
+        pitch = mavPitch.decode()
+
+        mavComp = mavDevice.recv_match(type='COMPASS', blocking = True)
+        compass = mavComp.decode()
+        
+        print(altitude + ' ' + roll + ' ' + pitch + ' ' + compass)
+        
+        latitude, longitude, altitude, azimuth, targetX, targetY, rollAngle, theta = response["data"]["latitude"], response["data"]["longitude"], response["data"][
+            "altitude"], response["data"]["azimuth"], response["data"]["target_X"], response["data"]["target_Y"], response["data"]["rollAngle"], response["data"]["theta"]
+>>>>>>> 11c0cb9 (better chance mavlink will work)
         setCamera(24, 4000, 2250, 0, 0, 0, 0, 0, 1, "cobb.tif")
         # OpenAthena stuff(use response payload to compute below)
         tarLat, tarLong, alt, terAlt = calcCoord(
