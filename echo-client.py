@@ -4,12 +4,12 @@ import socket
 import tkinter as tk
 import json
 import time
+import requests
 import threading
 from pymavlink import mavutil
 from openAthena import *
 
-
-mavDevice = mavutil.mavlink_connection('udp:COM6:9600')
+# mavDevice = mavutil.mavlink_connection('udp:COM6:9600')
 
 # generate Lat/Long Frame
 
@@ -129,46 +129,55 @@ def target_endpoint(lat, long, target_label):
         entry.delete("0", tk.END)  # Clear existing text
 
         # sends request for parameters
-        mavDevice.mav.param_request_list_send(
-            mavDevice.target_system, mavDevice.target_component)
+        param_dump = requests.get("http://localhost:56781/mavlink/")
+        parameters = json.loads(param_dump)
+        altitude, rollAngle, theta, azimuth = parameters["VFR_HUD"]["msg"]["alt"], parameters["ATTITUDE"]["msg"]["roll"], parameters["ATTITUDE"]["msg"]["pitch"], parameters["VFR_HUD"]["msg"]["heading"]
+        
+        #mavDevice.mav.param_request_list_send(
+            #mavDevice.target_system, mavDevice.target_component)
 
         # pulls altitude from mavlink
-        mavAlt = mavDevice.recv_match(type='ALT', blocking=True)
-        altitude = mavAlt.decode()
+        #mavAlt = mavDevice.recv_match(type='ALT', blocking=True)
+        #altitude = mavAlt.decode()
 
-        mavRoll = mavDevice.recv_match(type='RLL', blocking=True)
-        rollAngle = mavRoll.decode()
+        #mavRoll = mavDevice.recv_match(type='RLL', blocking=True)
+        #rollAngle = mavRoll.decode()
 
-        mavPitch = mavDevice.recv_match(type='PTCH', blocking=True)
-        theta = mavPitch.decode()
+        #mavPitch = mavDevice.recv_match(type='PTCH', blocking=True)
+        #theta = mavPitch.decode()
 
-        mavComp = mavDevice.recv_match(type='COMPASS', blocking=True)
-        azimuth = mavComp.decode()
+        #mavComp = mavDevice.recv_match(type='COMPASS', blocking=True)
+        #azimuth = mavComp.decode()
+        # dummy code 
+        """
+        altitude = 416
+        azimuth = 172
+        rollAngle = 0
+        theta = -36
+        """
 
-        print(altitude + ' ' + rollAngle + ' ' + theta + ' ' + azimuth)
+        #print(altitude + ' ' + rollAngle + ' ' + theta + ' ' + azimuth)
 
-        latitude, longitude, targetX, targetY = response["data"]["latitude"], response["data"]["longitude"], response["data"][
-            "altitude"], response["data"]["target_X"], response["data"]["target_Y"]
+        latitude, longitude, targetX, targetY = response["data"]["latitude"], response["data"]["longitude"],response["data"]["target_X"], response["data"]["target_Y"]
 
-        setCamera(24, 4000, 2250, 0, 0, 0, 0, 0, 1, "cobb.tif")
+        setCamera(21, 1280, 1024, 0, 0, 0, 0, 0, 1, "cobb.tif")
         # OpenAthena stuff(use response payload to compute below)
         tarLat, tarLong, alt, terAlt = calcCoord(
             latitude, longitude, altitude, azimuth, theta, targetX, targetY, rollAngle)
-        time.sleep(3)  # replicating delay
         target_latitude = tarLat
         target_longitude = tarLong
 
         # send target coordinates back to pi
-        post_target_coords = {
-            "method": "POST",
-            "endpoint": "target_found",
-            "payload": {
-                "target_lat": target_latitude,
-                "target_lon": target_longitude
-            }
-        }
-        target_coords_dump_string = json.dumps(post_target_coords)
-        s.sendall(target_coords_dump_string.encode('utf-8'))
+        # post_target_coords = {
+            # "method": "POST",
+            # "endpoint": "target_found",
+            # "payload": {
+                # "target_lat": target_latitude,
+                # "target_lon": target_longitude
+            # }
+        # }
+        # target_coords_dump_string = json.dumps(post_target_coords)
+        # s.sendall(target_coords_dump_string.encode('utf-8'))
 
         # update label
         lat.config(text=target_latitude)
@@ -197,6 +206,7 @@ def send_target_color(event=None):
     target_label = tk.Label(target_main_frame,
                             text="TARGET: NOT FOUND",
                             fg="#e3e4e2",
+                            bg="#000000",
                             font="Arial, 25")
     target_label.grid(row=0, column=0, pady=(0, 7))
 
@@ -218,21 +228,20 @@ def on_entry_focus_out(event=None):
 
 # Execution Starts here:
 
-HOST = "127.0.0.1"  # The server's hostname or IP address
-PORT = 65430  # The port used by the server
+HOST = "10.0.0.5"  # The server's hostname or IP address
+PORT = 65438  # The port used by the server
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
 
     root = tk.Tk()
-    root.configure(bg="black")
     root.title("GCS Interface")
 
     additional_frame = tk.Frame(root)
     additional_frame.pack(expand=True)
 
     # Center Frame
-    main_frame = tk.Frame(additional_frame)
+    main_frame = tk.Frame(additional_frame, bg="#000000")
     main_frame.grid(row=0, column=0, padx=(0, 30))
 
     # Generate Co-ordinate UI
@@ -263,6 +272,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         fg="#e3e4e2",
         font="Arial, 25",
     )
+    primary_label.configure(bg="#000000")
 
     # Widget Positioning
     entry.grid(row=0, column=0)
